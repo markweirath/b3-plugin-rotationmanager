@@ -33,9 +33,11 @@
 # 1.3.0        : Added support for CoD4
 # 1.3.1        : fixed a bug where on slower boxes the rotation wasn't stored on time
 # 1.3.2        : only add maps that have not been added in the last 4 passes, no more double maps
+# 1.3.3        : ...
+# 1.3.4        : bugfix in maphistory
 #
 
-__version__ = '1.3.3'
+__version__ = '1.3.4'
 __author__  = 'xlr8or'
 
 import b3, re, threading, time, random, copy
@@ -238,6 +240,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         c = random.randint(1,count)
         #self.debug('Random: %s' % c)
         for gametype,maplist in rot.items():
+          _skipMap = False
           if c > len(maplist):
             #self.debug('Length this maplist: %s' % (len(maplist)))
             c -= len(maplist)
@@ -245,8 +248,11 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             # Check if this map was recently added
             for m in self._recentmaps:
               if maplist[c-1] == m:
-                self.debug('Map %s skipped, already added in the last %s items' % (m, self._hmm) ) 
-                continue
+                _skipMap = True
+                self.debug('Map %s skipped, already added in the last %s items' % (m, self._hmm) )
+                break
+            if _skipMap:
+              continue # skip to the next map in queue
             addition = ''
             if gametype != lastgametype or self._version == 11 or self._version == 4: #UO and CoD4 need every gametype pre map
               addition = 'gametype ' + gametype + ' '
