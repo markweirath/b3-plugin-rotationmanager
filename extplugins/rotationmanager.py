@@ -70,7 +70,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
   _recentmaps = []                      # The Maphistory
   _recentgts = []                       # The Gametype history
   _hmm = 4                              # HowManyMaps to keep as a maphistory
-  _hmgt = 2                             # HowManyGameTypes to keep as a gametype history
+  _hmgt = 0                             # HowManyGameTypes to keep as a gametype history
 
   def onStartup(self):
     """\
