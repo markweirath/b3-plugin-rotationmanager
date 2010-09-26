@@ -1,6 +1,6 @@
 ###################################################################################
 #
-# Plugin for B3 (www.bigbrotherbot.com)
+# Plugin for B3 (www.bigbrotherbot.net)
 # (c) 2006 www.xlr8or.com (mailto:xlr8or@xlr8or.com)
 #
 # This program is free software and licensed under the terms of
@@ -9,7 +9,7 @@
 # http://www.gnu.org/copyleft/gpl.html
 ###################################################################################
 
-RotationManager (v1.3.0) for B3
+RotationManager (v1.3.5) for B3
 ###################################################################################
 
 This plugin adjusts your maprotation based on the current playercount.
@@ -47,6 +47,11 @@ plugin list.
 
 Changelog
 ###################################################################################
+v1.3.5         : Added support for gametypehistory, optimized maphistory - justabaka
+v1.3.4         : bugfix in maphistory
+v1.3.3         : ...
+v1.3.2         : only add maps that have not been added in the last 4 passes, no more double maps
+v1.3.1         : fixed a bug where on slower boxes the rotation wasn't stored on time
 v1.3.0         : Added support for CoD4
 v1.2.2 - v1.2.3: Introduced version 11 for UO; generate rotations with all gametypes
 v1.2.1 - v1.2.2: Added another safety .strip() when storing _roundstart_mapRotationCurrent
@@ -65,4 +70,4 @@ v1.0.0         : Initial release
 
 
 ###################################################################################
-xlr8or - 28 nov 2007 - www.bigbrotherbot.com // www.xlr8or.com
+xlr8or - 28 nov 2007 - www.bigbrotherbot.net // www.xlr8or.com

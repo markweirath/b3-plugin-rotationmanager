@@ -1,5 +1,5 @@
 #
-# Plugin for BigBrotherBot(B3) (www.bigbrotherbot.com)
+# Plugin for BigBrotherBot(B3) (www.bigbrotherbot.net)
 # Copyright (C) 2005 www.xlr8or.com
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -35,9 +35,10 @@
 # 1.3.2        : only add maps that have not been added in the last 4 passes, no more double maps
 # 1.3.3        : ...
 # 1.3.4        : bugfix in maphistory
+# 1.3.5        : Added support for gametypehistory, changed maphistory - justabaka
 #
 
-__version__ = '1.3.4'
+__version__ = '1.3.5'
 __author__  = 'xlr8or'
 
 import b3, re, threading, time, random, copy
@@ -67,7 +68,9 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
   _fallbackrotation = ''
   _needfallbackrotation = False
   _recentmaps = []                      # The Maphistory
+  _recentgts = []						# The Gametype history
   _hmm = 4                              # HowManyMaps to keep as a maphistory
+  _hmgt = 2								# HowManyGameTypes to keep as a gametype history
 
   def onStartup(self):
     """\
@@ -109,6 +112,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
     self._version = self.config.getint('settings', 'version')
     self._randomizerotation = self.config.getboolean('settings', 'randomizerotation')
     self._hmm = abs(self.config.getint('settings', 'maphistory'))
+    self._hmgt = abs(self.config.getint('settings', 'gametypehistory'))
     
     for gametype in self.config.options('rotation_small'):
       maps = self.config.get('rotation_small', gametype)
@@ -245,13 +249,15 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             #self.debug('Length this maplist: %s' % (len(maplist)))
             c -= len(maplist)
           else:
+            # Check if this mode was recently added
+            if gametype in self._recentgts:
+              _skipMap = True
+              self.debug('Gametype %s skipped, already added in the last %s items' % (m, self._hmgt) )
+              continue # skip to the next map in queue
             # Check if this map was recently added
-            for m in self._recentmaps:
-              if maplist[c-1] == m:
-                _skipMap = True
-                self.debug('Map %s skipped, already added in the last %s items' % (m, self._hmm) )
-                break
-            if _skipMap:
+            elif maplist[c-1] in self._recentmaps:
+              _skipMap = True
+              self.debug('Map %s skipped, already added in the last %s items' % (m, self._hmm) )
               continue # skip to the next map in queue
             addition = ''
             if gametype != lastgametype or self._version == 11 or self._version == 4: #UO and CoD4 need every gametype pre map
@@ -268,7 +274,10 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             lastgametype = gametype
             if self._hmm != 0:
               self._recentmaps.append(addingmap)
-              self._recentmaps = self._recentmaps[-self._hmm:] # Slice the last self._hmm nr. of maps
+              self._recentmaps = self._recentmaps[-self._hmm:] # Slice the last _hmm nr. of maps
+            if self._hmgt != 0:
+              self._recentgts.append(gametype)
+              self._recentgts = self._recentgts[-self._hmgt:] # Slice the last _hmgt nr. of gametypes
             break
         count -= 1
     else:
@@ -384,4 +393,4 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
     self.console.write(self._restartCmd)
 
 if __name__ == '__main__':
-  print '\nThis is version '+__version__+' by '+__author__+' for BigBrotherBot.\n'
+  print ('\nThis is version '+__version__+' by '+__author__+' for BigBrotherBot.\n')

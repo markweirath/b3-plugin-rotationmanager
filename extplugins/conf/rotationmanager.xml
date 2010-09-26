@@ -1,15 +1,15 @@
 <configuration plugin="rotationmanager">
 	<settings name="settings">
-		<!--
+	<!--
     Three rotations have two switchingpoints. 
     The first rotationswitch will be when server reaches the next number of players:
     -->
-		<set name="switchcount1">5</set>
-		<!--
+	<set name="switchcount1">5</set>
+	<!--
     Three rotations have two switchingpoints. 
     The second rotationswitch will be when server reaches the next number of players:
     -->
-		<set name="switchcount2">9</set>
+	<set name="switchcount2">9</set>
     <!--
     Do you want the server to react fast to your playercount or would you like to
     reduce the number of rotationswitches? The hysteresis will make your switchcounts
@@ -17,19 +17,27 @@
     switchpoint is passed.
     -->
     <set name="hysteresis">1</set>
-		<!--
+	<!--
     Do you want the plugin to build a random rotation when switching? This is good when
     we need to switch a lot! I suggest you leave this set to true. (Options: true/false)
     -->
     <set name="randomizerotation">true</set>
-		<!--
-		How many maps should we store as a maphistory, so they don't get stored in the
-		rotation too close to eachother. If for example set to 4, at least 4 other maps
+	<!--
+	How many maps should we store as a maphistory, so they don't get stored in the
+	rotation too close to eachother. If for example set to 4, at least 4 other maps
     will be put in rotation before a map can be repeated. This goes for randomized
     rotations only! set to 0 to disable this.
     -->
-		<set name="maphistory">4</set>
-		<!--
+	<set name="maphistory">4</set>
+	<!--
+	Same as previous, but is applied to gametypes.
+	NOTE: If you set this bigger or equal than your game's amount of gametypes, the rotation
+	will always stop growing after first <this value> maps. For example, if you set this
+	to 6 or for cod4 which has 6 gametypes, your generated maplist will have 6 maps only.
+	Set to 0 to disable this.
+    -->
+	<set name="gametypehistory">0</set>
+	<!--
     The next line makes the new rotation effective immediately (next map).
     NOTE: If you dont use randomizerotation this could lead to playing the same maps
     over and over again! (Options: true/false)
@@ -39,14 +47,14 @@
     What gameversion is running? CoD1 or CoD:UO = 1 / CoD2 = 2 / CoD4 = 4 / CoD5 = 5
     -->
     <set name="version">4</set>
-		<!--
+	<!--
     I think its fair if we wait for the slower maploaders. This option will fast_restart
     the next map after the set delay (seconds) so slower players have equal chances.
     Setting it to 0 will disable the function.
     -->
     <set name="mapdelay">0</set>
 	</settings>
-	
+
 	<!--
 	Next section is the setting of maprotations. You can supply several maps for several gametypes
 	Don't use a gametype twice in the same rotation though, it will not work as planned!
@@ -55,21 +63,20 @@
 	provided and it will be a proper and smart maprotation! Don't overdo it on the number of maps,
 	it could lead to errors because the maprotation becomes too big for CoD! Use the syntax below!
 
-  "dm" - free for all deathmatch
-  "dom" - domination
-  "koth" - headquarters
-  "sab" - sabotage
-  "sd" - search & destroy
-  "war" - team deathmatch
+	"dm" - free for all deathmatch
+	"dom" - domination
+	"koth" - headquarters
+	"sab" - sabotage
+	"sd" - search & destroy
+	"war" - team deathmatch
 
-  <set name="dm">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
-  <set name="dom">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
-  <set name="koth">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
-  <set name="sab">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
-  <set name="sd">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
-  <set name="war">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_showdown mp_strike mp_vacant</set>
-
-  -->
+	<set name="dm">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
+	<set name="dom">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
+	<set name="koth">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
+	<set name="sab">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
+	<set name="sd">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
+	<set name="war">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_showdown mp_strike mp_vacant</set>
+	-->
 	
 	<settings name="rotation_small">
 	  <set name="war">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_showdown mp_strike mp_vacant</set>
