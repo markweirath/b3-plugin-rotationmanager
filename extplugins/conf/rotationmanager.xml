@@ -30,7 +30,8 @@
     -->
 	<set name="maphistory">4</set>
 	<!--
-    The next line makes the new rotation effective immediately (next map).
+    The next line makes the new rotation effective immediately (on next map). Does NOT
+	perform a map change.
     NOTE: If you dont use randomizerotation this could lead to playing the same maps
     over and over again! (Options: true/false)
     -->
