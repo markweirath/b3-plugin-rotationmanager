@@ -70,7 +70,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
   _recentmaps = []                      # The Maphistory
   _recentgts = []                       # The Gametype history
   _hmm = 4                              # HowManyMaps to keep as a maphistory
-  _hmgt = 0                             # HowManyGameTypes to keep as a gametype history
+  _hmgt = [0,0,0]                       # HowManyGameTypes to keep as a gametype history
 
   def onStartup(self):
     """\
@@ -112,8 +112,13 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
     self._version = self.config.getint('settings', 'version')
     self._randomizerotation = self.config.getboolean('settings', 'randomizerotation')
     self._hmm = abs(self.config.getint('settings', 'maphistory'))
-    self._hmgt = abs(self.config.getint('settings', 'gametypehistory'))
-    
+	
+    for rotation_size in self.config.options('gametypehistory'):
+      self._hmgt[0] = abs(self.config.getint('gametypehistory', 'gthistory_small'))
+      self._hmgt[1] = abs(self.config.getint('gametypehistory', 'gthistory_medium'))
+      self._hmgt[2] = abs(self.config.getint('gametypehistory', 'gthistory_large'))
+      self.debug('GTHistory is set to: %s' %(self._hmgt))
+
     for gametype in self.config.options('rotation_small'):
       maps = self.config.get('rotation_small', gametype)
       maps = maps.split(' ')
@@ -222,13 +227,13 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
       return None
 
     self.debug('Adjusting to %s mapRotation' % rotname)
-    self.console.setCvar('sv_mapRotation', self.generaterotation(rotation))
+    self.console.setCvar('sv_mapRotation', self.generaterotation(rotation, newrotation))
     if self._immediate:
       self.console.setCvar('sv_mapRotationCurrent', '')
     self._currentrotation = newrotation
 
 
-  def generaterotation(self, rotation):
+  def generaterotation(self, rotation, rotation_size):
     self.debug('Generate from: %s' % (rotation))
     r = ''
 
@@ -252,12 +257,12 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             # Check if this mode was recently added
             if gametype in self._recentgts:
               _skipMap = True
-              self.debug('Gametype %s skipped, already added in the last %s items' % (m, self._hmgt) )
+              self.debug('Gametype %s skipped, already added in the last %s items' % (gametype, self._hmgt[rotation_size]) )
               continue # skip to the next map in queue
             # Check if this map was recently added
             elif maplist[c-1] in self._recentmaps:
               _skipMap = True
-              self.debug('Map %s skipped, already added in the last %s items' % (m, self._hmm) )
+              self.debug('Map %s skipped, already added in the last %s items' % (maplist[c-1], self._hmm) )
               continue # skip to the next map in queue
             addition = ''
             if gametype != lastgametype or self._version == 11 or self._version == 4: #UO and CoD4 need every gametype pre map
@@ -275,9 +280,9 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             if self._hmm != 0:
               self._recentmaps.append(addingmap)
               self._recentmaps = self._recentmaps[-self._hmm:] # Slice the last _hmm nr. of maps
-            if self._hmgt != 0:
+            if self._hmgt[rotation_size] != 0:
               self._recentgts.append(gametype)
-              self._recentgts = self._recentgts[-self._hmgt:] # Slice the last _hmgt nr. of gametypes
+              self._recentgts = self._recentgts[-self._hmgt[rotation_size]:] # Slice the last _hmgt nr. of gametypes
             break
         count -= 1
     else:
