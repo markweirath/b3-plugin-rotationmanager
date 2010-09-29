@@ -1,0 +1,3 @@
+New config file syntax was introduced in version 1.3.5, see 'histories' settings group in conf\rotationmanager.xml
+
+If you fail to provide correct settings, both maphistory and gametypehistory will fall back to default values (4 for maphistory, 0 for gthistory).
