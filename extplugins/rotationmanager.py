@@ -234,7 +234,8 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
 
 
   def generaterotation(self, rotation, rotation_size):
-    self.debug('Generate from: %s' % (rotation))
+    #self.debug('Generate from: %s @ size: %s' % (rotation, rotation_size))
+    rotation_size -=1 # We'll be using it as an index for _hmgt 
     r = ''
 
     if self._randomizerotation:
