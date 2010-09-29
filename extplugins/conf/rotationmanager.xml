@@ -23,13 +23,6 @@
     -->
     <set name="randomizerotation">true</set>
 	<!--
-	How many maps should we store as a maphistory, so they don't get stored in the
-	rotation too close to eachother. If for example set to 4, at least 4 other maps
-    will be put in rotation before a map can be repeated. This goes for randomized
-    rotations only! set to 0 to disable this.
-    -->
-	<set name="maphistory">4</set>
-	<!--
     The next line makes the new rotation effective immediately (on next map). Does NOT
 	perform a map change.
     NOTE: If you dont use randomizerotation this could lead to playing the same maps
@@ -47,7 +40,17 @@
     -->
     <set name="mapdelay">0</set>
 	</settings>
-
+	
+	<settings name="histories">
+	<!--
+	How many maps should we store as a maphistory, so they don't get stored in the
+	rotation too close to eachother. If for example set to 4, at least 4 other maps
+    will be put in rotation before a map can be repeated. This goes for randomized
+    rotations only! set to 0 to disable this.
+    -->
+	<set name="maphistory_small">4</set>
+	<set name="maphistory_medium">4</set>
+	<set name="maphistory_large">4</set>
 	<!--
 	Same as maphistory, but is applied to gametypes for every rotation size.
 	NOTE: If you set this bigger or equal than your game's amount of gametypes, the rotation
@@ -55,7 +58,6 @@
 	to 6 or for cod4 which has 6 gametypes, your generated maplist will have 6 maps only.
 	Set to 0 to disable per rotation size.
     -->
-	<settings name="gametypehistory">
 	<set name="gthistory_small">0</set>
 	<set name="gthistory_medium">0</set>
 	<set name="gthistory_large">0</set>

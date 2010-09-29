@@ -35,7 +35,8 @@
 # 1.3.2        : only add maps that have not been added in the last 4 passes, no more double maps
 # 1.3.3        : ...
 # 1.3.4        : bugfix in maphistory
-# 1.3.5        : Added support for gametypehistory, changed maphistory - justabaka
+# 1.3.5        : Added gametypehistory, changed maphistory: both are now configurable for each
+#                rotation size individually - justabaka
 #
 
 __version__ = '1.3.5'
@@ -69,7 +70,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
   _needfallbackrotation = False
   _recentmaps = []                      # The Maphistory
   _recentgts = []                       # The Gametype history
-  _hmm = 4                              # HowManyMaps to keep as a maphistory
+  _hmm = [0,0,0]                        # HowManyMaps to keep as a maphistory
   _hmgt = [0,0,0]                       # HowManyGameTypes to keep as a gametype history
 
   def onStartup(self):
@@ -111,13 +112,16 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
     self._mapDelay = self.config.getint('settings', 'mapdelay')
     self._version = self.config.getint('settings', 'version')
     self._randomizerotation = self.config.getboolean('settings', 'randomizerotation')
-    self._hmm = abs(self.config.getint('settings', 'maphistory'))
-	
-    for rotation_size in self.config.options('gametypehistory'):
-      self._hmgt[0] = abs(self.config.getint('gametypehistory', 'gthistory_small'))
-      self._hmgt[1] = abs(self.config.getint('gametypehistory', 'gthistory_medium'))
-      self._hmgt[2] = abs(self.config.getint('gametypehistory', 'gthistory_large'))
-      self.debug('GTHistory is set to: %s' %(self._hmgt))
+    
+    self._hmm[0] = abs(self.config.getint('histories', 'maphistory_small'))
+    self._hmm[1] = abs(self.config.getint('histories', 'maphistory_medium'))
+    self._hmm[2] = abs(self.config.getint('histories', 'maphistory_large'))
+    self.debug('MapHistory is set to: %s' %(self._hmm))	
+    
+    self._hmgt[0] = abs(self.config.getint('histories', 'gthistory_small'))
+    self._hmgt[1] = abs(self.config.getint('histories', 'gthistory_medium'))
+    self._hmgt[2] = abs(self.config.getint('histories', 'gthistory_large'))
+    self.debug('GTHistory is set to: %s' %(self._hmgt))
 
     for gametype in self.config.options('rotation_small'):
       maps = self.config.get('rotation_small', gametype)
@@ -263,7 +267,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             # Check if this map was recently added
             elif maplist[c-1] in self._recentmaps:
               _skipMap = True
-              self.debug('Map %s skipped, already added in the last %s items' % (maplist[c-1], self._hmm) )
+              self.debug('Map %s skipped, already added in the last %s items' % (maplist[c-1], self._hmm[rotation_size]) )
               continue # skip to the next map in queue
             addition = ''
             if gametype != lastgametype or self._version == 11 or self._version == 4: #UO and CoD4 need every gametype pre map
@@ -278,9 +282,9 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             #self.debug('Building: %s' % r)
             rot[gametype] = maplist
             lastgametype = gametype
-            if self._hmm != 0:
+            if self._hmm[rotation_size] != 0:
               self._recentmaps.append(addingmap)
-              self._recentmaps = self._recentmaps[-self._hmm:] # Slice the last _hmm nr. of maps
+              self._recentmaps = self._recentmaps[-self._hmm[rotation_size]:] # Slice the last _hmm nr. of maps
             if self._hmgt[rotation_size] != 0:
               self._recentgts.append(gametype)
               self._recentgts = self._recentgts[-self._hmgt[rotation_size]:] # Slice the last _hmgt nr. of gametypes

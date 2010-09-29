@@ -47,7 +47,8 @@ plugin list.
 
 Changelog
 ###################################################################################
-v1.3.5         : Added support for gametypehistory, optimized maphistory - justabaka
+v1.3.5         : Added gametypehistory, changed maphistory: both are now configurable for each
+                 rotation size individually - justabaka
 v1.3.4         : bugfix in maphistory
 v1.3.3         : ...
 v1.3.2         : only add maps that have not been added in the last 4 passes, no more double maps
