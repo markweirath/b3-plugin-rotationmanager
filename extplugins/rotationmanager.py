@@ -42,7 +42,11 @@
 __version__ = '1.3.5'
 __author__  = 'xlr8or'
 
-import b3, re, threading, time, random, copy
+import copy
+import threading
+import time
+import random
+import b3
 import b3.events
 
 #--------------------------------------------------------------------------------------------------
@@ -254,19 +258,16 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         c = random.randint(1,count)
         #self.debug('Random: %s' % c)
         for gametype,maplist in rot.items():
-          _skipMap = False
           if c > len(maplist):
             #self.debug('Length this maplist: %s' % (len(maplist)))
             c -= len(maplist)
           else:
             # Check if this mode was recently added
             if gametype in self._recentgts:
-              _skipMap = True
               self.debug('Gametype %s skipped, already added in the last %s items' % (gametype, self._hmgt[rotation_size]) )
               continue # skip to the next map in queue
             # Check if this map was recently added
             elif maplist[c-1] in self._recentmaps:
-              _skipMap = True
               self.debug('Map %s skipped, already added in the last %s items' % (maplist[c-1], self._hmm[rotation_size]) )
               continue # skip to the next map in queue
             addition = ''
@@ -343,9 +344,8 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
     self._oldplayercount = self._playercount
     self._playercount = 0
     self._donotadjustnow = False
-    
-    for p in self.console.clients.getList():
-      self._playercount += 1
+
+    self._playercount = len (self.console.clients.getList())
 
     self.debug('PlayerCount: %s' % (self._playercount))    
     
