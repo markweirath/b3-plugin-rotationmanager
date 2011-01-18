@@ -200,20 +200,26 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             return None
 
         if delta == +1:
-            if self._playercount > (self._switchcount2 + self._hysteresis) and self._rotation_size != 3:
-                self.setrotation(3)
-            elif self._playercount > (self._switchcount1 + self._hysteresis)  and self._rotation_size != 2:
-                self.setrotation(2)
-            elif self._rotation_size != 1:
-                self.setrotation(1)
+            if self._playercount > (self._switchcount2 + self._hysteresis):
+                if self._rotation_size != 3:
+                    self.setrotation(3)
+            elif self._playercount > (self._switchcount1 + self._hysteresis):
+                if self._rotation_size != 2:
+                    self.setrotation(2)
+            else:
+                if self._rotation_size != 1:
+                    self.setrotation(1)
 
         elif delta == -1 or delta == 0:
-            if self._playercount < (self._switchcount1 + (delta * self._hysteresis)) and self._rotation_size != 1:
-                self.setrotation(1)
-            elif self._playercount < (self._switchcount2 + (delta * self._hysteresis)) and self._rotation_size != 2:
-                self.setrotation(2)
-            elif self._rotation_size != 3:
-                self.setrotation(3)
+            if self._playercount < (self._switchcount1 + (delta * self._hysteresis)):
+                if self._rotation_size != 1:
+                    self.setrotation(1)
+            elif self._playercount < (self._switchcount2 + (delta * self._hysteresis)):
+                if self._rotation_size != 2:
+                    self.setrotation(2)
+            else:
+                if self._rotation_size != 3:
+                    self.setrotation(3)
 
         else:
             self.debug('Rotation size has not changed, will not update rotation.')
