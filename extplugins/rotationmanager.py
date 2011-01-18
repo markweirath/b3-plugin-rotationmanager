@@ -198,31 +198,31 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
     def adjustrotation(self, delta):
         if self._donotadjustnow:
             return None
+    
+        new_rotation = 0 # size from 1 to 3
 
         if delta == +1:
             if self._playercount > (self._switchcount2 + self._hysteresis):
-                if self._rotation_size != 3:
-                    self.setrotation(3)
+                new_rotation = 3
             elif self._playercount > (self._switchcount1 + self._hysteresis):
-                if self._rotation_size != 2:
-                    self.setrotation(2)
+                new_rotation = 2
             else:
-                if self._rotation_size != 1:
-                    self.setrotation(1)
+                new_rotation = 1
 
         elif delta == -1 or delta == 0:
             if self._playercount < (self._switchcount1 + (delta * self._hysteresis)):
-                if self._rotation_size != 1:
-                    self.setrotation(1)
+                new_rotation = 1
             elif self._playercount < (self._switchcount2 + (delta * self._hysteresis)):
-                if self._rotation_size != 2:
-                    self.setrotation(2)
+                new_rotation = 2
             else:
-                if self._rotation_size != 3:
-                    self.setrotation(3)
+                new_rotation = 3
 
+        if new_rotation != 0 and new_rotation != self._rotation_size:
+            self.setrotation (new_rotation)
+        elif new_rotation == 0:
+            self.debug ('Invalid delta has been passed to adjustrotation, aborting.')
         else:
-            self.debug('Rotation size has not changed, will not update rotation.')
+            self.debug ('Rotation size has not changed, will not update rotation.')
 
         return None
 
