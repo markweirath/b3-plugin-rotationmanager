@@ -1,12 +1,12 @@
 <configuration plugin="rotationmanager">
 	<settings name="settings">
 	<!--
-    Three rotations have two switchingpoints. 
+    Three rotations have two switchingpoints. Set to 0 to disable.
     The first rotationswitch will be when server reaches the next number of players:
     -->
 	<set name="switchcount1">5</set>
 	<!--
-    Three rotations have two switchingpoints. 
+    Three rotations have two switchingpoints. Set to 0 to disable.
     The second rotationswitch will be when server reaches the next number of players:
     -->
 	<set name="switchcount2">9</set>
@@ -30,13 +30,13 @@
     -->
     <set name="immediate">true</set>
     <!--
-    What gameversion is running? CoD1 or CoD:UO = 1 / CoD2 = 2 / CoD4 = 4 / CoD5 = 5
+    What gameversion is running? CoD1 or CoD:UO = 1 / CoD2 = 2 / CoD4 = 4 / CoD5 = 5 / CoD7 = 7
     -->
     <set name="version">4</set>
 	<!--
     I think its fair if we wait for the slower maploaders. This option will fast_restart
     the next map after the set delay (seconds) so slower players have equal chances.
-    Setting it to 0 will disable the function.
+    Setting it to 0 will disable the function. Useless for Black Ops.
     -->
     <set name="mapdelay">0</set>
 	</settings>
@@ -76,14 +76,15 @@
 	"koth" - headquarters
 	"sab" - sabotage
 	"sd" - search & destroy
-	"war" - team deathmatch
+	"war" - team deathmatch (non-Black Ops)
+    
+	"tdm" - team deathmatch (Black Ops)
+	"dem" - demolition (Black Ops only!)
+	"ctf" - capture the flag (Black Ops only!)
 
-	<set name="dm">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
-	<set name="dom">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
-	<set name="koth">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
-	<set name="sab">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
-	<set name="sd">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
-	<set name="war">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_showdown mp_strike mp_vacant</set>
+    cod4 maps: mp_backlot mp_bloc mp_bog mp_carentan mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_creek mp_crossfire mp_farm mp_killhouse mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant
+    cod7 maps: mp_array mp_cairo mp_cosmodrome mp_cracked mp_crisis mp_duga mp_firingrange mp_hanoi mp_havoc mp_mountain mp_nuked mp_radiation mp_russianbase mp_villa
+
 	-->
 	
 	<settings name="rotation_small">
