@@ -9,7 +9,7 @@
 # http://www.gnu.org/copyleft/gpl.html
 ###################################################################################
 
-RotationManager (v1.3.5) for B3
+RotationManager (v1.3.6) for B3
 ###################################################################################
 
 This plugin adjusts your maprotation based on the current playercount.
@@ -47,6 +47,7 @@ plugin list.
 
 Changelog
 ###################################################################################
+v1.3.6         : Added cod7 support, beautified code. - Just a baka
 v1.3.5         : Added gametypehistory, changed maphistory: both are now configurable for each
                  rotation size individually - justabaka
 v1.3.4         : bugfix in maphistory
