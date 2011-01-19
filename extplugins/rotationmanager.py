@@ -37,9 +37,11 @@
 # 1.3.4        : bugfix in maphistory
 # 1.3.5        : Added gametypehistory, changed maphistory: both are now configurable for each
 #                rotation size individually - Just a baka
-# 1.3.6        : Added cod7 support, beautified code. - Just a baka
+# 1.3.6        : Added cod7 support, beautified code - Just a baka
+# 1.3.7        : Reworked adjustrotation, fixed bugs that were causing unnecessary
+#                setrotation() calls - Just a baka
 
-__version__ = '1.3.6'
+__version__ = '1.3.7'
 __author__  = 'xlr8or,justabaka'
 
 import copy
@@ -209,10 +211,18 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             else:
                 new_rotation = 1
 
-        elif delta == -1 or delta == 0:
-            if self._playercount < (self._switchcount1 + (delta * self._hysteresis)):
+        elif delta == -1:
+            if self._playercount < (self._switchcount1 - self._hysteresis):
                 new_rotation = 1
-            elif self._playercount < (self._switchcount2 + (delta * self._hysteresis)):
+            elif self._playercount < (self._switchcount2 - self._hysteresis):
+                new_rotation = 2
+            else:
+                new_rotation = 3
+
+        elif delta == 0:
+            if self._playercount < self._switchcount1:
+                new_rotation = 1
+            elif self._playercount < self._switchcount2:
                 new_rotation = 2
             else:
                 new_rotation = 3
@@ -331,6 +341,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
                             self._recentgts = self._recentgts[-self._hmgt[rotation_size]:] # Slice the last _hmgt nr. of gametypes
                         break
                 count -= 1
+
         else:
             self.debug('Creating non-randomized rotation...')
             stringmax = 0
