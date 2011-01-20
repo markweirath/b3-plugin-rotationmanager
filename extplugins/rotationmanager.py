@@ -448,7 +448,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         else:
             pass    
 
-    #@todo: disable getting this
+
     def retrievefallback(self):
         self._fallbackrotation = self.console.getCvar('sv_mapRotation').getString()
         time.sleep(0.5) # Give us plenty time to store the rotation
