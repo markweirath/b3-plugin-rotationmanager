@@ -83,9 +83,19 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
 
     _cod7Maps = ['mp_array','mp_cairo','mp_cosmodrome','mp_cracked','mp_crisis','mp_duga','mp_firingrange','mp_hanoi',
                  'mp_havoc','mp_nuked','mp_mountain','mp_radiation','mp_russianbase','mp_villa']
-    _cod7Gts  = ['ctf','dem','dom','dm','koth','sab','sd','tdm']
-    #@todo: implement softcore/hardcore/barebones and 12/18 slots as well
-    _cod7Playlists = {'ctf':3 ,'dem':8, 'dom':6, 'dm':2, 'koth':5, 'sab': 7, 'sd':4, 'tdm':1}
+    _cod7Playlists = {18: {
+                            0: {'tdm':1, 'dm':2, 'ctf':3, 'sd':4, 'koth':5, 'dom':6, 'sab':7, 'dem':8},         # softcore
+                            1: {'tdm':9, 'dm':10, 'ctf':11, 'sd':12, 'koth':13, 'dom':14, 'sab':15, 'dem':16},  # hardcore
+                            2: {'tdm':17, 'dm':18, 'ctf':19, 'sd':20, 'koth':21, 'dom':22, 'sab':23, 'dem':24}, # barebones
+                          },
+                      12: {
+                            0: {'tdm':32, 'dm':33, 'ctf':34, 'sd':35, 'koth':36, 'dom':37, 'sab':38, 'dem':39}, # softcore
+                            1: {'tdm':41, 'dm':42, 'ctf':43, 'sd':44, 'koth':45, 'dom':46, 'sab':47, 'dem':48}, # hardcore
+                            2: {'tdm':50, 'dm':51, 'ctf':52, 'sd':53, 'koth':54, 'dom':55, 'sab':56},           # barebones (yes, no dem)
+                          }
+                     }
+    _slot_num = 18
+    _game_mode = 0
 
 
     def onStartup(self):
@@ -103,7 +113,8 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         self._needfallbackrotation = True
 
         # we'll store the initial rotation
-        self.retrievefallback()
+        if self._version != 7:
+            self.retrievefallback()
 
         # wait half a minute after pluginstart to do an initial playercount
         t1 = threading.Timer(30, self.recountplayers)
@@ -137,6 +148,17 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         self._hmgt[2] = abs(self.config.getint('histories', 'gthistory_large'))
         self.debug('GTHistory is set to: %s' % self._hmgt)
 
+        if self._version == 7:
+            self._slot_num = self.config.getint('cod7', 'slot_num')
+            if self._slot_num not in (12, 18):
+                self.error ('Incorrect number of slots (%d), assuming you meant 18.' % self._slot_num)
+                self._slot_num = 18
+
+            self._game_mode = self.config.getint('cod7', 'game_mode')
+            if self._game_mode not in (0, 1, 2):
+                self.error ('Incorrect game mode (%d), assuming you meant softcore.' % self._game_mode)
+                self._game_mode = 0
+        
         for gametype in self.config.options('rotation_small'):
             maps = self.config.get('rotation_small', gametype)
             maps = maps.split(' ')
@@ -155,9 +177,9 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             self._rotation_large[gametype] = maps
             self.debug('Large %s: %s' % (gametype, maps))
 
-        if self._version in (1, 11):        # 1: CoD1 or 11: CoD UO
+        if self._version in (1, 11):         # 1: CoD1 or 11: CoD UO
             self._restartCmd = 'map_restart'
-        elif self._version in (2, 4, 5):     # CoD2, CoD4 or CoD5
+        elif self._version in (2, 4, 5, 6):     # CoD2, CoD4, CoD5 or CoD6
             self._restartCmd = 'fast_restart'
         else:
             self._mapDelay = 0
@@ -201,7 +223,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         if self._donotadjustnow:
             return None
     
-        new_rotation = 0 # size from 1 to 3
+        new_rotation = 0 # size: from 1 (small) to 3 (large)
 
         if delta == +1:
             if self._playercount > (self._switchcount2 + self._hysteresis):
@@ -227,7 +249,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             else:
                 new_rotation = 3
 
-        if new_rotation != 0 and new_rotation != self._rotation_size:
+        if new_rotation != 0 and (new_rotation != self._rotation_size or len(self._cod7MapRotation) == 0):
             self.setrotation (new_rotation)
         elif new_rotation == 0:
             self.debug ('Invalid delta has been passed to adjustrotation, aborting.')
@@ -304,18 +326,24 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
                         # Check if this mode was recently added
                         if gametype in self._recentgts:
                             self.debug('Gametype %s skipped, already added in the last %s items' % (gametype, self._hmgt[rotation_size]) )
-                            continue # skip to the next map in queue
+                            continue    # skip to the next map in queue
                         # Check if this map was recently added
                         elif maplist[c-1] in self._recentmaps:
                             self.debug('Map %s skipped, already added in the last %s items' % (maplist[c-1], self._hmm[rotation_size]) )
-                            continue # skip to the next map in queue
+                            continue    # skip to the next map in queue
+                        # cod7 - check if this gametype exists for the chosen game mode and a number of slots
+                        elif gametype not in self._cod7Playlists[self._slot_num][self._game_mode]:
+                            self.warning('Gametype %s cannot be played in current playlist (game_mode=%d, slot_num=%d)' % (gametype, self._slot_num, self._game_mode))
+                            continue    # skip to the next map in queue
 
                         if self._version != 7:
                             addition = ''
 
-                        if gametype != lastgametype or self._version in (4,11): #UO and CoD4 need every gametype pre map
+                        if gametype != lastgametype or self._version in (4, 6, 11): #UO, CoD4 and CoD6 need every gametype pre map
                             addition = 'gametype ' + gametype + ' '
+
                         addingmap = maplist.pop(c-1)
+                        
                         if self._version != 7:
                             addition = addition + 'map ' + addingmap + ' '
 
@@ -345,8 +373,8 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         else:
             self.debug('Creating non-randomized rotation...')
             stringmax = 0
-            # UO, CoD4 needs every gametype pre map
-            if self._version in (4, 11):
+            # UO, CoD6 and CoD4 needs every gametype pre map
+            if self._version in (4, 6, 11):
                 for gametype,maplist in rotation.items():
                     for map in maplist:
                         addition = 'gametype ' + gametype + ' ' + 'map ' + map + ' '
@@ -420,7 +448,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         else:
             pass    
 
-
+    #@todo: disable getting this
     def retrievefallback(self):
         self._fallbackrotation = self.console.getCvar('sv_mapRotation').getString()
         time.sleep(0.5) # Give us plenty time to store the rotation
@@ -461,14 +489,10 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         nextmap = self._cod7MapRotation.pop(0)
         self.debug('COD7MAPROTATE: next map will be %s at %s' % (nextmap[0], nextmap[1]))
 
-        #@todo: implement hardcore/barebones and 12/18 slots
-        if nextmap[0] in self._cod7Playlists:
-            self.console.write('setadmindvar playlist %s' % self._cod7Playlists[nextmap[0]])
-        else:
-            self.debug('Gametype %s is not in _cod7Playlists!' % nextmap[0])
-            return
+        # Set the playlist thus changing the gametype
+        self.console.write('setadmindvar playlist %s' % self._cod7Playlists[self._slot_num][self._game_mode][nextmap[0]])
 
-        # Build a map exclusion rule
+        # Build a map exclusion rule then apply it. Will exclude every map except the next one.
         exclusion = copy.copy (self._cod7Maps)
         exclusion.remove (nextmap[1])
         self.console.write ('setadmindvar playlist_excludeMap "%s"' % ' '.join(exclusion))
