@@ -332,7 +332,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
                             self.debug('Map %s skipped, already added in the last %s items' % (maplist[c-1], self._hmm[rotation_size]) )
                             continue    # skip to the next map in queue
                         # cod7 - check if this gametype exists for the chosen game mode and a number of slots
-                        elif gametype not in self._cod7Playlists[self._slot_num][self._game_mode]:
+                        elif self._version ==7 and gametype not in self._cod7Playlists[self._slot_num][self._game_mode]:
                             self.warning('Gametype %s cannot be played in current playlist (game_mode=%d, slot_num=%d)' % (gametype, self._slot_num, self._game_mode))
                             continue    # skip to the next map in queue
 
