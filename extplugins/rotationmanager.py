@@ -177,7 +177,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             self._rotation_large[gametype] = maps
             self.debug('Large %s: %s' % (gametype, maps))
 
-        if self._version in (1, 11):         # 1: CoD1 or 11: CoD UO
+        if self._version in (1, 11):            # 1: CoD1 or 11: CoD UO
             self._restartCmd = 'map_restart'
         elif self._version in (2, 4, 5, 6):     # CoD2, CoD4, CoD5 or CoD6
             self._restartCmd = 'fast_restart'
@@ -214,7 +214,12 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
                 t5.start()
             # cod7 map change support
             if self._version == 7:
-                # wait 1 minute and set the next map
+                if len(self._cod7MapRotation) == 0:
+                    self._donotadjustnow = False
+                    self.debug ('Nothing nothing to rotate, re-adjusting rotation...')
+                    self.adjustrotation(0)
+                # wait 2 minutes and set the next map
+                self.debug ('Map change detected, Will push the new map to the server after 2 minutes.')
                 t6 = threading.Timer(120, self.cod7maprotate)
                 t6.start()
 
@@ -222,7 +227,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
     def adjustrotation(self, delta):
         if self._donotadjustnow:
             return None
-    
+
         new_rotation = 0 # size: from 1 (small) to 3 (large)
 
         if delta == +1:
