@@ -6,7 +6,7 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -266,10 +266,17 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         # restore the rotation if the new one is the same as the one at round/map start
         if newrotation == self._roundstart_currentrotation and self._roundstart_mapRotation is not None and self._version != 7:
             self.debug('Restoring Cached Roundstart Rotations')
-            if self._roundstart_mapRotation != '':
-                self.console.setCvar('sv_mapRotation', self._roundstart_mapRotation)
-            if self._roundstart_mapRotationCurrent != '':
-                self.console.setCvar('sv_mapRotationCurrent', self._roundstart_mapRotationCurrent)
+            if self._version != 6:
+                if self._roundstart_mapRotation != '':
+                    self.console.setCvar('sv_mapRotation', self._roundstart_mapRotation)
+                if self._roundstart_mapRotationCurrent != '':
+                    self.console.setCvar('sv_mapRotationCurrent', self._roundstart_mapRotationCurrent)
+            else:
+                if self._roundstart_mapRotation != '':
+                    self.console.write('sv_mapRotation %s' % self._roundstart_mapRotation)
+                if self._roundstart_mapRotationCurrent != '':
+                    self.console.write('sv_mapRotationCurrent %s' % self._roundstart_mapRotationCurrent)
+
             self._currentrotation = newrotation
             return None
 
@@ -293,8 +300,10 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
 
         if self._version != 7:
             self.console.setCvar('sv_mapRotation', self._rotation)
-            if self._immediate:
+            if self._immediate and self._version != 6:
                 self.console.setCvar('sv_mapRotationCurrent', '')
+            elif self._immediate:
+                self.console.write('reset sv_mapRotationCurrent')
             self._currentrotation = newrotation
         else:
             self.cod7maprotate()
@@ -332,7 +341,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
                             self.debug('Map %s skipped, already added in the last %s items' % (maplist[c-1], self._hmm[rotation_size]) )
                             continue    # skip to the next map in queue
                         # cod7 - check if this gametype exists for the chosen game mode and a number of slots
-                        elif self._version ==7 and gametype not in self._cod7Playlists[self._slot_num][self._game_mode]:
+                        elif self._version == 7 and gametype not in self._cod7Playlists[self._slot_num][self._game_mode]:
                             self.warning('Gametype %s cannot be played in current playlist (game_mode=%d, slot_num=%d)' % (gametype, self._slot_num, self._game_mode))
                             continue    # skip to the next map in queue
 
@@ -347,7 +356,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
                         if self._version != 7:
                             addition = addition + 'map ' + addingmap + ' '
 
-                        if self._version != 7 and (len(r) + len(addition)) > 980:
+                        if self._version != 7 and (len(r) + len(addition)) > 960:
                             self.debug('Maximum sv_rotation stringlength reached... Aborting adding maps to rotation!')
                             count = 0 # Make sure we break out of the while loop
                             break     # Break out of the for loop
