@@ -40,9 +40,10 @@
 # 1.3.6        : Added cod7 support, beautified code - Just a baka
 # 1.3.7        : Reworked adjustrotation, fixed bugs that were causing unnecessary
 #                setrotation() calls - Just a baka
+# 1.3.8        : Implemented proper cod6 support, optimized first saveroundstartrotation - Just a baka
 
 __version__ = '1.3.7'
-__author__  = 'xlr8or,justabaka'
+__author__  = 'xlr8or, Just a baka'
 
 import copy
 import threading
@@ -74,6 +75,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
     _roundstart_currentrotation = 0
     _fallbackrotation = ''
     _needfallbackrotation = False
+    _needgeneratedroundstartrotation = False
     _rotation_size = 1                    # 1 - small, 2 - medium, 3 - large
     _recentmaps = []                      # The Maphistory
     _recentgts = []                       # The Gametype history
@@ -111,6 +113,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         # don't adjust the rotation just yet
         self._donotadjustnow = True
         self._needfallbackrotation = True
+        self._needgeneratedroundstartrotation = True
 
         # we'll store the initial rotation
         if self._version != 7:
@@ -119,10 +122,6 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         # wait half a minute after pluginstart to do an initial playercount
         t1 = threading.Timer(30, self.recountplayers)
         t1.start()
-
-        # Save the first generated rotation as the cached roundstart rotation
-        t2 = threading.Timer(40, self.saveroundstartrotation)
-        t2.start()
 
         self.debug('Started')
 
@@ -304,15 +303,21 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         self._rotation = self.generaterotation(rotation)
 
         if self._version != 7:
-            self.console.setCvar('sv_mapRotation', self._rotation)
+            if self._version != 6:
+                self.console.setCvar('sv_mapRotation', self._rotation)
+            else:
+                self.console.write('sv_mapRotation %s' % self._rotation)
+
             if self._immediate and self._version != 6:
                 self.console.setCvar('sv_mapRotationCurrent', '')
             elif self._immediate:
                 self.console.write('reset sv_mapRotationCurrent')
             self._currentrotation = newrotation
+
+            if self._needgeneratedroundstartrotation:
+                self.saveroundstartrotation()
         else:
             self.cod7maprotate()
-            pass
 
 
     def generaterotation(self, rotation):
@@ -460,7 +465,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         elif self._playercount < self._oldplayercount:
             self.adjustrotation(-1)
         else:
-            pass    
+            pass
 
 
     def retrievefallback(self):
@@ -475,7 +480,13 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
 
 
     def saveroundstartrotation(self):
-        if self._version != 7:
+        if self._needgeneratedroundstartrotation and self._version != 7:
+            self.debug('Saving the first generated rotation as the cached roundstart rotation')
+            self._roundstart_mapRotation = self._rotation
+            self._roundstart_mapRotationCurrent = ''
+            self._needgeneratedroundstartrotation = False
+
+        elif self._version != 7:
             self.debug('Getting current Rotation')
             self._roundstart_mapRotation = self.console.getCvar('sv_mapRotation')
             if self._roundstart_mapRotation is not None and self._roundstart_mapRotation != '':
