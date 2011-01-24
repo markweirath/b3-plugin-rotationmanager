@@ -42,7 +42,7 @@
 #                setrotation() calls - Just a baka
 # 1.3.8        : Implemented proper cod6 support, optimized first saveroundstartrotation - Just a baka
 
-__version__ = '1.3.7'
+__version__ = '1.3.8'
 __author__  = 'xlr8or, Just a baka'
 
 import copy
