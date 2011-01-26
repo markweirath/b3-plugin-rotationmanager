@@ -213,10 +213,6 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
                 t5.start()
             # cod7 map change support
             if self._version == 7:
-                if len(self._cod7MapRotation) == 0:
-                    self._donotadjustnow = False
-                    self.debug ('Nothing nothing to rotate, re-adjusting rotation...')
-                    self.adjustrotation(0)
                 # wait 2 minutes and set the next map
                 self.debug ('Map change detected, Will push the new map to the server after 2 minutes.')
                 t6 = threading.Timer(120, self.cod7maprotate)
@@ -510,6 +506,11 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
 
 
     def cod7maprotate(self):
+        if len(self._cod7MapRotation) == 0:
+            self._donotadjustnow = False
+            self.debug ('Nothing nothing to rotate, re-adjusting rotation...')
+            self.adjustrotation(0)
+
         # Get the next [gametype,map] and remove it from _cod7MapRotation
         nextmap = self._cod7MapRotation.pop(0)
         self.debug('COD7MAPROTATE: next map will be %s at %s' % (nextmap[0], nextmap[1]))
