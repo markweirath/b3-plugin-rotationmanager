@@ -249,7 +249,8 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             else:
                 new_rotation = 3
 
-        if new_rotation != 0 and (new_rotation != self._rotation_size or len(self._cod7MapRotation) == 0):
+        if new_rotation != 0 and (new_rotation != self._rotation_size or\
+                                 (self._version == 7 and len(self._cod7MapRotation) == 0)):
             self.setrotation (new_rotation)
         elif new_rotation == 0:
             self.debug ('Invalid delta has been passed to adjustrotation, aborting.')
