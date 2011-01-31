@@ -75,7 +75,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
     _roundstart_currentrotation = 0
     _fallbackrotation = ''
     _needfallbackrotation = False
-    _needgeneratedroundstartrotation = False
+    _initialrecount = False
     _rotation_size = 1                    # 1 - small, 2 - medium, 3 - large
     _recentmaps = []                      # The Maphistory
     _recentgts = []                       # The Gametype history
@@ -113,7 +113,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         # don't adjust the rotation just yet
         self._donotadjustnow = True
         self._needfallbackrotation = True
-        self._needgeneratedroundstartrotation = True
+        self._initialrecount = True
 
         # we'll store the initial rotation
         if self._version != 7:
@@ -250,7 +250,8 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
                 new_rotation = 3
 
         if new_rotation != 0 and (new_rotation != self._rotation_size or\
-                                 (self._version == 7 and len(self._cod7MapRotation) == 0)):
+                                 (self._version == 7 and len(self._cod7MapRotation) == 0) or\
+                                  self._initialrecount):
             self.setrotation (new_rotation)
         elif new_rotation == 0:
             self.debug ('Invalid delta has been passed to adjustrotation, aborting.')
@@ -311,8 +312,8 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
                 self.console.write('reset sv_mapRotationCurrent')
             self._currentrotation = newrotation
 
-            if self._needgeneratedroundstartrotation:
-                self.saveroundstartrotation()
+            if self._initialrecount:
+                self.saveroundstartrotation(self._rotation)
         else:
             self.cod7maprotate()
 
@@ -476,12 +477,12 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             self.error('Could not save original rotation... Waiting for next pass')
 
 
-    def saveroundstartrotation(self):
-        if self._needgeneratedroundstartrotation and self._version != 7:
+    def saveroundstartrotation(self, rotation=''):
+        if self._initialrecount and self._version != 7:
             self.debug('Saving the first generated rotation as the cached roundstart rotation')
-            self._roundstart_mapRotation = self._rotation
+            self._roundstart_mapRotation = rotation
             self._roundstart_mapRotationCurrent = ''
-            self._needgeneratedroundstartrotation = False
+            self._initialrecount = False
 
         elif self._version != 7:
             self.debug('Getting current Rotation')
