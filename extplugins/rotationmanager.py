@@ -510,7 +510,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
     def cod7maprotate(self):
         if len(self._cod7MapRotation) == 0:
             self._donotadjustnow = False
-            self.debug ('Nothing nothing to rotate, re-adjusting rotation...')
+            self.debug ('Nothing to rotate, re-adjusting rotation...')
             self.adjustrotation(0)
 
         # Get the next [gametype,map] and remove it from _cod7MapRotation
