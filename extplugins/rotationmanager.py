@@ -112,11 +112,11 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
 
         # don't adjust the rotation just yet
         self._donotadjustnow = True
-        self._needfallbackrotation = True
-        self._initialrecount = True
-
-        # we'll store the initial rotation
+        
         if self._version != 7:
+            self._needfallbackrotation = True
+            self._initialrecount = True
+            # we'll store the initial rotation
             self.retrievefallback()
 
         # wait half a minute after pluginstart to do an initial playercount
