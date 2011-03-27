@@ -84,7 +84,8 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
     _cod7MapRotation = []
 
     _cod7Maps = ['mp_array','mp_cairo','mp_cosmodrome','mp_cracked','mp_crisis','mp_duga','mp_firingrange','mp_hanoi',
-                 'mp_havoc','mp_nuked','mp_mountain','mp_radiation','mp_russianbase','mp_villa']
+                 'mp_havoc','mp_nuked','mp_mountain','mp_radiation','mp_russianbase','mp_villa','mp_berlinwall2',
+                 'mp_kowloon','mp_stadium','mp_discovery']
     _cod7Playlists = {18: {
                             0: {'tdm':1, 'dm':2, 'ctf':3, 'sd':4, 'koth':5, 'dom':6, 'sab':7, 'dem':8},         # softcore
                             1: {'tdm':9, 'dm':10, 'ctf':11, 'sd':12, 'koth':13, 'dom':14, 'sab':15, 'dem':16},  # hardcore

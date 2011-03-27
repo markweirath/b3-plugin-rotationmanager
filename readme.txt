@@ -9,7 +9,7 @@
 # http://www.gnu.org/copyleft/gpl.html
 ###################################################################################
 
-RotationManager (v1.3.6) for B3
+RotationManager (v1.3.8) for B3
 ###################################################################################
 
 This plugin adjusts your maprotation based on the current playercount.
@@ -47,9 +47,12 @@ plugin list.
 
 Changelog
 ###################################################################################
+v1.3.8         : Reworked adjustrotation, fixed bugs that were causing unnecessary
+                 setrotation() calls - Just a baka
+V1.3.7         : Implemented proper cod6 support, optimized first saveroundstartrotation - Just a baka
 v1.3.6         : Added cod7 support, beautified code. - Just a baka
 v1.3.5         : Added gametypehistory, changed maphistory: both are now configurable for each
-                 rotation size individually - justabaka
+                 rotation size individually - Just a baka
 v1.3.4         : bugfix in maphistory
 v1.3.3         : ...
 v1.3.2         : only add maps that have not been added in the last 4 passes, no more double maps
