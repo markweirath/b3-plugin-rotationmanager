@@ -41,9 +41,10 @@
 # 1.3.7        : Reworked adjustrotation, fixed bugs that were causing unnecessary
 #                setrotation() calls - Just a baka
 # 1.3.8        : Implemented proper cod6 support, optimized first saveroundstartrotation - Just a baka
+# 1.3.9        : Added map, maps and nextmap commands for ranked cod7 - 82ndab-Bravo17
 
-__version__ = '1.3.8'
-__author__  = 'xlr8or, Just a baka'
+__version__ = '1.3.9'
+__author__  = 'xlr8or, Just a baka, 82ndab-Bravo17'
 
 import copy
 import threading
@@ -82,6 +83,9 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
     _hmm = [0,0,0]                        # HowManyMaps to keep as a maphistory
     _hmgt = [0,0,0]                       # HowManyGameTypes to keep as a gametype history
     _cod7MapRotation = []
+    _cod7MapRotationFixed = []
+    _nextmap7 = []
+    _outofrotation = False
 
     _cod7Maps = ['mp_array','mp_cairo','mp_cosmodrome','mp_cracked','mp_crisis','mp_duga','mp_firingrange','mp_hanoi',
                  'mp_havoc','mp_nuked','mp_mountain','mp_radiation','mp_russianbase','mp_villa','mp_berlinwall2',
@@ -99,12 +103,34 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
                      }
     _slot_num = 18
     _game_mode = 0
+    _cod7Gametypes = ['tdm', 'dm', 'ctf', 'sd', 'hq', 'koth', 'dom', 'sab', 'dem']
 
 
     def onStartup(self):
         """\
         Initialize plugin settings
         """
+        
+
+        # get the admin plugin so we can register commands
+        self._adminPlugin = self.console.getPlugin('admin')
+        if not self._adminPlugin:
+            # something is wrong, can't start without admin plugin
+            self.error('Could not find admin plugin')
+            return False
+
+        # register our commands
+        if 'commands' in self.config.sections() and self._version == 7:
+            for cmd in self.config.options('commands'):
+                level = self.config.get('commands', cmd)
+                sp = cmd.split('-')
+                alias = None
+                if len(sp) == 2:
+                    cmd, alias = sp
+
+                func = self.getCmd(cmd)
+                if func:
+                    self._adminPlugin.registerCommand(self, cmd, level, func, alias)
         # Register our events
         self.verbose('Registering events')
         self.registerEvent(b3.events.EVT_CLIENT_CONNECT)
@@ -184,6 +210,13 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         else:
             self._mapDelay = 0
 
+    def getCmd(self, cmd):
+        cmd = 'cmd_%s' % cmd
+        if hasattr(self, cmd):
+            func = getattr(self, cmd)
+            return func
+    
+        return None
 
     def onEvent(self, event):
         """\
@@ -216,6 +249,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             if self._version == 7:
                 # wait 2 minutes and set the next map
                 self.debug ('Map change detected, Will push the new map to the server after 2 minutes.')
+                self.cod7getnextmap()
                 t6 = threading.Timer(120, self.cod7maprotate)
                 t6.start()
 
@@ -316,6 +350,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             if self._initialrecount:
                 self.saveroundstartrotation(self._rotation)
         else:
+            self.cod7getnextmap()
             self.cod7maprotate()
 
 
@@ -410,6 +445,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
                     for map in maplist:
                         addition = [gametype, map]
                         self._cod7MapRotation.append (addition)
+                self._cod7MapRotationFixed = self._cod7MapRotation
 
             else:
                 for gametype,maplist in rotation.items():
@@ -507,23 +543,27 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         else:
             pass
 
-
-    def cod7maprotate(self):
+    def cod7getnextmap(self):
         if len(self._cod7MapRotation) == 0:
             self._donotadjustnow = False
             self.debug ('Nothing to rotate, re-adjusting rotation...')
             self.adjustrotation(0)
 
         # Get the next [gametype,map] and remove it from _cod7MapRotation
-        nextmap = self._cod7MapRotation.pop(0)
-        self.debug('COD7MAPROTATE: next map will be %s at %s' % (nextmap[0], nextmap[1]))
+        if not self._outofrotation:
+            self._nextrotationmap = self._cod7MapRotation.pop(0)
+        self._nextmap7 = self._nextrotationmap
+        self._outofrotation = False
+
+    def cod7maprotate(self):
+        self.debug('COD7MAPROTATE: next map will be %s at %s' % (self._nextmap7[0], self._nextmap7[1]))
 
         # Set the playlist thus changing the gametype
-        self.console.write('setadmindvar playlist %s' % self._cod7Playlists[self._slot_num][self._game_mode][nextmap[0]])
+        self.console.write('setadmindvar playlist %s' % self._cod7Playlists[self._slot_num][self._game_mode][self._nextmap7[0]])
 
         # Build a map exclusion rule then apply it. Will exclude every map except the next one.
         exclusion = copy.copy (self._cod7Maps)
-        exclusion.remove (nextmap[1])
+        exclusion.remove (self._nextmap7[1])
         self.console.write ('setadmindvar playlist_excludeMap "%s"' % ' '.join(exclusion))
 
         # Keep playlist_excludeGametypeMap empty, I'm in charge here!
@@ -542,6 +582,101 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         time.sleep(3)
         self.console.write(self._restartCmd)
 
+    def cmd_maps(self, data, client=None, cmd=None):
+        """\
+        - list the server's map rotation for cod7, optionally limit the number in the list
+        """
+
+        if not self._adminPlugin.aquireCmdLock(cmd, client, 60, True):
+            client.message('^7Do not spam commands')
+            return
+
+        m = self._adminPlugin.parseUserCmd(data)
+        if m:
+            try:
+                limitno = int(m[0])
+            except:
+                limitno = 1000
+            
+        else:
+            limitno = 1000
+
+        if self._randomizerotation:
+            rotation = self._cod7MapRotation[0:limitno]
+        else:
+            if limitno == 1000:
+                rotation = self._cod7MapRotationFixed
+            else:
+                rotation = self._cod7MapRotation[0:limitno]
+
+        maplist = ''
+        
+        for maps in rotation:
+            maplist = maplist + maps[1] + '^7-^3' + maps[0] + '  ^2'
+            
+        if len(maplist) > 0:
+            cmd.sayLoudOrPM(client, '^7Map Rotation: ^2%s' % maplist)
+        else:
+            client.message('^7Error: could not get map list')
+    
+    def cmd_nextmap(self, data, client=None, cmd=None):
+        """\
+        - list the next map in rotation for cod7
+        """
+        if not self._adminPlugin.aquireCmdLock(cmd, client, 60, True):
+            client.message('^7Do not spam commands')
+            return
+
+        map = self._nextmap7
+
+        if map:
+            if map[0] == 'koth':
+                gt = 'hq'
+            else:
+                gt = map[0]
+                
+            cmd.sayLoudOrPM(client, '^7Next Map: ^2%s with ^3%s^2 gametype' % (map[1], gt))
+        else:
+            client.message('^7Error: could not get map name')
+            
+    def cmd_map(self, data, client=None, cmd=None):
+        """\
+        - switch what the next map and gametype is for cod7
+        """
+        m = self._adminPlugin.parseUserCmd(data)
+        
+        if not m:
+            client.message('^7You must supply a map and gametype to change to.')
+            return
+            
+        map, gt = m
+        if map not in self._cod7Maps:
+            client.message('^7You must supply a map and gametype to change to.')
+            return
+         
+        if not gt or gt not in self._cod7Gametypes:
+            client.message('^7You must supply a gametype to change to.')
+            return
+        # Set the playlist thus changing the gametype
+        if gt == 'hq':
+            gt = 'koth'
+            
+
+        self._outofrotation = True
+        self._nextmap7 = [gt, map]
+        if gt == 'koth':
+            gt = 'hq'
+        client.message('^7Next map changed to ^2%s with ^3%s^2 gametype' % (map, gt))
+        self.cod7maprotate()
+
+
+    def aquireCmdLock(self, cmd, client, delay, all=True):
+        if client.maxLevel >= 20:
+            return True
+        elif cmd.time + delay <= self.console.time():
+            return True
+        else:
+            return False    
 
 if __name__ == '__main__':
     print ('\nThis is version '+__version__+' by '+__author__+' for BigBrotherBot.\n')

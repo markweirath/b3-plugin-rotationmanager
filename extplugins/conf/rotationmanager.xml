@@ -1,4 +1,9 @@
 <configuration plugin="rotationmanager">
+	<settings name="commands">
+		<set name="nextmap">1</set>
+		<set name="maps">20</set> 
+		<set name="map">40</set>
+	</settings>
 	<settings name="settings">
 	<!--
     Three rotations have two switchingpoints.
