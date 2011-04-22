@@ -654,8 +654,8 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             client.message('^7You must supply a map and gametype to change to.')
             return
          
-        if not gt or gt not in self._cod7Gametypes:
-            client.message('^7You must supply a gametype to change to.')
+        if not gt or gt not in self._cod7Gametypes or gt not in self._cod7Playlists[self._slot_num][self._game_mode]:
+            client.message('^7You must supply a valid gametype to change to.')
             return
         # Set the playlist thus changing the gametype
         if gt == 'hq':
