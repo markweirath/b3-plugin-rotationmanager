@@ -42,6 +42,8 @@
 #                setrotation() calls - Just a baka
 # 1.3.8        : Implemented proper cod6 support, optimized first saveroundstartrotation - Just a baka
 # 1.3.9        : Added map, maps and nextmap commands for ranked cod7 - 82ndab-Bravo17
+# 1.3.9a       : Added Names translation for COD7 maps - 82ndab-Bravo17
+# 1.3.9b       : Added DLC2 Maps
 
 __version__ = '1.3.9'
 __author__  = 'xlr8or, Just a baka, 82ndab-Bravo17'
@@ -52,6 +54,7 @@ import time
 import random
 import b3
 import b3.events
+import string
 
 #--------------------------------------------------------------------------------------------------
 class RotationmanagerPlugin(b3.plugin.Plugin):
@@ -89,7 +92,13 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
 
     _cod7Maps = ['mp_array','mp_cairo','mp_cosmodrome','mp_cracked','mp_crisis','mp_duga','mp_firingrange','mp_hanoi',
                  'mp_havoc','mp_nuked','mp_mountain','mp_radiation','mp_russianbase','mp_villa','mp_berlinwall2',
-                 'mp_kowloon','mp_stadium','mp_discovery']
+                 'mp_kowloon','mp_stadium','mp_discovery','mp_gridlock','mp_hotel','mp_outskirts','mp_zoo']
+    _cod7Mapeasynames = ['Array','Havanna','Launch','Cracked','Crisis','Grid','Firing Range','Hanoi',
+                         'Jungle','Nuketown','Summit','Radiation','WMD','Villa','Berlin Wall',
+                         'Kowloon','Stadium','Discovery','Gridlock','Hotel','Outskirts','Zoo']
+    _cod7Mapeasynameslower = ['array','havanna','launch','cracked','crisis','grid','firing range','hanoi',
+                              'jungle','nuketown','summit','radiation','wmd','villa','berlin wall',
+                              'kowloon','stadium','discovery','gridlock','hotel','outskirts','zoo']
     _cod7Playlists = {18: {
                             0: {'tdm':1, 'dm':2, 'ctf':3, 'sd':4, 'koth':5, 'dom':6, 'sab':7, 'dem':8},         # softcore
                             1: {'tdm':9, 'dm':10, 'ctf':11, 'sd':12, 'koth':13, 'dom':14, 'sab':15, 'dem':16},  # hardcore
@@ -612,7 +621,8 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         maplist = ''
         
         for maps in rotation:
-            maplist = maplist + maps[1] + '^7-^3' + maps[0] + '  ^2'
+            mapeasyname = self.getcod7mapeasyname(maps[1])
+            maplist = maplist + mapeasyname + '^7-^3' + maps[0] + '  ^2'
             
         if len(maplist) > 0:
             cmd.sayLoudOrPM(client, '^7Map Rotation: ^2%s' % maplist)
@@ -630,12 +640,13 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         map = self._nextmap7
 
         if map:
+            mapeasyname =  self.getcod7mapeasyname(map[1])
             if map[0] == 'koth':
                 gt = 'hq'
             else:
                 gt = map[0]
                 
-            cmd.sayLoudOrPM(client, '^7Next Map: ^2%s with ^3%s^2 gametype' % (map[1], gt))
+            cmd.sayLoudOrPM(client, '^7Next Map: ^2%s with ^3%s^2 gametype' % (mapeasyname, gt))
         else:
             client.message('^7Error: could not get map name')
             
@@ -643,16 +654,20 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         """\
         - switch what the next map and gametype is for cod7
         """
-        m = self._adminPlugin.parseUserCmd(data)
+        #m = self._adminPlugin.parseUserCmd(data)
+        m = data.split(' ')
+        self.debug(m)
+        gt = m[-1]
+        map = string.join(m[0:-1])
         
-        if not m:
-            client.message('^7You must supply a map and gametype to change to.')
+        self.debug('Result is map %s gametype %s' % (map, gt))
+        map = map.lower()
+        if (map not in self._cod7Maps) and (map not in self._cod7Mapeasynameslower):
+            client.message('^7You must supply a map and valid gametype to change to.')
             return
-            
-        map, gt = m
-        if map not in self._cod7Maps:
-            client.message('^7You must supply a map and gametype to change to.')
-            return
+        
+        if map in self._cod7Mapeasynameslower:
+            maphardname = self.getcod7maphardname(map)
          
         if not gt or gt not in self._cod7Gametypes or gt not in self._cod7Playlists[self._slot_num][self._game_mode]:
             client.message('^7You must supply a valid gametype to change to.')
@@ -663,7 +678,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             
 
         self._outofrotation = True
-        self._nextmap7 = [gt, map]
+        self._nextmap7 = [gt, maphardname]
         if gt == 'koth':
             gt = 'hq'
         client.message('^7Next map changed to ^2%s with ^3%s^2 gametype' % (map, gt))
@@ -677,6 +692,23 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
             return True
         else:
             return False    
+    
+    def getcod7mapeasyname(self, map):
+        if map in self._cod7Maps:
+            ix = self._cod7Maps.index(map)
+            self.debug(map)
+            return self._cod7Mapeasynames[ix]
+        else:
+            return 'Error'
+            
+    def getcod7maphardname(self, map):
+        map = map.lower()
+        if map in self._cod7Mapeasynameslower:
+            ix = self._cod7Mapeasynameslower.index(map)
+            return self._cod7Maps[ix]
+        else:
+            return 'Error'
+            
 
 if __name__ == '__main__':
     print ('\nThis is version '+__version__+' by '+__author__+' for BigBrotherBot.\n')
