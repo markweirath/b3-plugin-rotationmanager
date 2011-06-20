@@ -47,6 +47,8 @@ plugin list.
 
 Changelog
 ###################################################################################
+v1.3.9         : Added DLC2 maps, 'easy' map names support. Implemented map, maps and
+                 nextmap commands for cod7 ranked server - 82ndab-Bravo17
 v1.3.8         : Reworked adjustrotation, fixed bugs that were causing unnecessary
                  setrotation() calls - Just a baka
 V1.3.7         : Implemented proper cod6 support, optimized first saveroundstartrotation - Just a baka
