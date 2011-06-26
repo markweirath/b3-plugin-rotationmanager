@@ -1,12 +1,17 @@
 <configuration plugin="rotationmanager">
+	<settings name="commands">
+		<set name="nextmap">1</set>
+		<set name="maps">20</set> 
+		<set name="map">40</set>
+	</settings>
 	<settings name="settings">
 	<!--
-    Three rotations have two switchingpoints. 
+    Three rotations have two switchingpoints.
     The first rotationswitch will be when server reaches the next number of players:
     -->
 	<set name="switchcount1">5</set>
 	<!--
-    Three rotations have two switchingpoints. 
+    Three rotations have two switchingpoints. Set to more than your server slot number to disable.
     The second rotationswitch will be when server reaches the next number of players:
     -->
 	<set name="switchcount2">9</set>
@@ -30,13 +35,14 @@
     -->
     <set name="immediate">true</set>
     <!--
-    What gameversion is running? CoD1 or CoD:UO = 1 / CoD2 = 2 / CoD4 = 4 / CoD5 = 5
+    What gameversion is running? CoD1 or CoD:UO = 1 / CoD2 = 2 / CoD4 = 4 / CoD5 = 5 /
+                                         CoD MW2 = 6 / CoD BO Ranked = 7
     -->
     <set name="version">4</set>
 	<!--
     I think its fair if we wait for the slower maploaders. This option will fast_restart
     the next map after the set delay (seconds) so slower players have equal chances.
-    Setting it to 0 will disable the function.
+    Setting it to 0 will disable the function. Useless for Black Ops.
     -->
     <set name="mapdelay">0</set>
 	</settings>
@@ -53,37 +59,55 @@
 	<set name="maphistory_large">4</set>
 	<!--
 	Same as maphistory, but is applied to gametypes for every rotation size.
-	NOTE: If you set this bigger or equal than your game's amount of gametypes, the rotation
-	will always stop growing after first <this value> maps. For example, if you set this
-	to 6 or for cod4 which has 6 gametypes, your generated maplist will have 6 maps only.
-	Set to 0 to disable per rotation size.
+	NOTE: If you set this bigger or equal than your correspondent rotation's amount
+    of gametypes, the rotation will always stop growing after first <this value> maps.
     -->
 	<set name="gthistory_small">0</set>
 	<set name="gthistory_medium">0</set>
 	<set name="gthistory_large">0</set>
 	</settings>
+    
+    <!-- Call of Duty: Black Ops related settings -->
+    <settings name="cod7">
+        <!-- Number of players (12 or 18 ONLY) -->
+        <set name="slot_num">18</set>
+        <!-- Game mode: 0 for softcore, 1 for hardcore, 2 for barebones -->
+        <set name="game_mode">0</set>
+    </settings>
 	
 	<!--
 	Next section is the setting of maprotations. You can supply several maps for several gametypes
 	Don't use a gametype twice in the same rotation though, it will not work as planned!
 	You can however use a map more than once in a gametype if you would like to play it more often.
 	If you left randomizerotation to true the plugin will create a random rotation from all gametypes/maps
-	provided and it will be a proper and smart maprotation! Don't overdo it on the number of maps,
-	it could lead to errors because the maprotation becomes too big for CoD! Use the syntax below!
+	provided and it will be a proper and smart maprotation.
 
-	"dm" - free for all deathmatch
-	"dom" - domination
-	"koth" - headquarters
-	"sab" - sabotage
-	"sd" - search & destroy
-	"war" - team deathmatch
+    A little reference on cod4-cod7 gametypes and maps:
 
-	<set name="dm">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
-	<set name="dom">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
-	<set name="koth">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
-	<set name="sab">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
-	<set name="sd">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant</set>
-	<set name="war">mp_backlot mp_bloc mp_bog mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_crossfire mp_farm mp_overgrown mp_pipeline mp_showdown mp_strike mp_vacant</set>
+    CoD4 gametypes (this also applies to all the next CoDs):
+	"dm" - Free for All deathmatch
+	"dom" - Domination
+	"koth" - Headquarters
+	"sab" - Sabotage
+	"sd" - Search & Destroy
+	"war" - Team Deathmatch (DO NOT use for Black Ops)
+
+    CoD6 (Modern Warfare 2) ONLY:
+    "ctf" - Capture the Flag
+    "arena" - Arena
+    "dd" - Demolition
+    "oneflag" - One-Flag CTF
+    "gtnw" - Global Thermonuclear War
+
+    CoD7 (Black Ops) ONLY:
+    "ctf" - Capture the Flag
+	"dem" - Demolition (Please note: there's no demolition in barebones)
+	"tdm" - Team Deathmatch
+
+    cod4 maps: mp_backlot mp_bloc mp_bog mp_carentan mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_creek mp_crossfire mp_farm mp_killhouse mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant
+    cod6 maps (alteriwnet, all dlcs): mp_abandon mp_afghan mp_boneyard mp_brecourt mp_checkpoint mp_compact mp_complex mp_crash mp_derail mp_estate mp_favela mp_fuel2 mp_highrise mp_invasion mp_nightshift mp_overgrown mp_quarry mp_rundown mp_rust mp_storm mp_strike mp_subbase mp_terminal mp_trailerpark mp_underpass mp_vacant
+    cod7 maps: mp_gridlock mp_hotel mp_outskirts mp_zoo mp_berlinwall2 mp_kowloon mp_stadium mp_discovery mp_array mp_cairo mp_cosmodrome mp_cracked mp_crisis mp_duga mp_firingrange mp_hanoi mp_havoc mp_mountain mp_nuked mp_radiation mp_russianbase mp_villa
+
 	-->
 	
 	<settings name="rotation_small">
