@@ -21,7 +21,8 @@
     somewhat flexible. Setting it to 0 will make the plugin react at once when a 
     switchpoint is passed.
     -->
-    <set name="hysteresis">1</set>
+    <set name="hysteresis1">1</set>
+    <set name="hysteresis2">1</set>
 	<!--
     Do you want the plugin to build a random rotation when switching? This is good when
     we need to switch a lot! I suggest you leave this set to true. (Options: true/false)
