@@ -21,7 +21,8 @@
     somewhat flexible. Setting it to 0 will make the plugin react at once when a 
     switchpoint is passed.
     -->
-    <set name="hysteresis">1</set>
+    <set name="hysteresis1">1</set>
+    <set name="hysteresis2">1</set>
 	<!--
     Do you want the plugin to build a random rotation when switching? This is good when
     we need to switch a lot! I suggest you leave this set to true. (Options: true/false)
@@ -106,7 +107,7 @@
 
     cod4 maps: mp_backlot mp_bloc mp_bog mp_carentan mp_cargoship mp_citystreets mp_convoy mp_countdown mp_crash mp_creek mp_crossfire mp_farm mp_killhouse mp_overgrown mp_pipeline mp_shipment mp_showdown mp_strike mp_vacant
     cod6 maps (alteriwnet, all dlcs): mp_abandon mp_afghan mp_boneyard mp_brecourt mp_checkpoint mp_compact mp_complex mp_crash mp_derail mp_estate mp_favela mp_fuel2 mp_highrise mp_invasion mp_nightshift mp_overgrown mp_quarry mp_rundown mp_rust mp_storm mp_strike mp_subbase mp_terminal mp_trailerpark mp_underpass mp_vacant
-    cod7 maps: mp_gridlock mp_hotel mp_outskirts mp_zoo mp_berlinwall2 mp_kowloon mp_stadium mp_discovery mp_array mp_cairo mp_cosmodrome mp_cracked mp_crisis mp_duga mp_firingrange mp_hanoi mp_havoc mp_mountain mp_nuked mp_radiation mp_russianbase mp_villa
+    cod7 maps: mp_gridlock mp_hotel mp_outskirts mp_zoo mp_berlinwall2 mp_kowloon mp_stadium mp_discovery mp_array mp_cairo mp_cosmodrome mp_cracked mp_crisis mp_duga mp_firingrange mp_hanoi mp_havoc mp_mountain mp_nuked mp_radiation mp_russianbase mp_villa  mp_area51 mp_drivein mp_golfcourse mp_silo
 
 	-->
 	

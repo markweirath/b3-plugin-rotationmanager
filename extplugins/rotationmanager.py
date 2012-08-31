@@ -44,8 +44,10 @@
 # 1.3.9        : Added map, maps and nextmap commands for ranked cod7 - 82ndab-Bravo17
 # 1.3.9a       : Added Names translation for COD7 maps - 82ndab-Bravo17
 # 1.3.9b       : Added DLC2 Maps
+# 1.3.9c       : Added DLC3 Maps
+# 1.4.0        : Correct hysteresis logic and add second hysteresis value, now have one for snall-medium and one for medium-high
 
-__version__ = '1.3.9'
+__version__ = '1.4.0'
 __author__  = 'xlr8or, Just a baka, 82ndab-Bravo17'
 
 import copy
@@ -65,7 +67,8 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
     _immediate = 0
     _switchcount1 = 0
     _switchcount2 = 0
-    _hysteresis = 0
+    _hysteresis1 = 0
+    _hysteresis2 = 0
     _playercount = -1
     _oldplayercount = None
     _mapDelay = 0
@@ -92,13 +95,13 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
 
     _cod7Maps = ['mp_array','mp_cairo','mp_cosmodrome','mp_cracked','mp_crisis','mp_duga','mp_firingrange','mp_hanoi',
                  'mp_havoc','mp_nuked','mp_mountain','mp_radiation','mp_russianbase','mp_villa','mp_berlinwall2',
-                 'mp_kowloon','mp_stadium','mp_discovery','mp_gridlock','mp_hotel','mp_outskirts','mp_zoo']
+                 'mp_kowloon','mp_stadium','mp_discovery','mp_gridlock','mp_hotel','mp_outskirts','mp_zoo','mp_area51','mp_drivein','mp_silo','mp_golfcourse']
     _cod7Mapeasynames = ['Array','Havanna','Launch','Cracked','Crisis','Grid','Firing Range','Hanoi',
                          'Jungle','Nuketown','Summit','Radiation','WMD','Villa','Berlin Wall',
-                         'Kowloon','Stadium','Discovery','Gridlock','Hotel','Outskirts','Zoo']
+                         'Kowloon','Stadium','Discovery','Gridlock','Hotel','Outskirts','Zoo','Hanger 18','Drive-in','Silo','Hazard']
     _cod7Mapeasynameslower = ['array','havanna','launch','cracked','crisis','grid','firing range','hanoi',
                               'jungle','nuketown','summit','radiation','wmd','villa','berlin wall',
-                              'kowloon','stadium','discovery','gridlock','hotel','outskirts','zoo']
+                              'kowloon','stadium','discovery','gridlock','hotel','outskirts','zoo','hanger 18','drive-in','silo','hazard']
     _cod7Playlists = {18: {
                             0: {'tdm':1, 'dm':2, 'ctf':3, 'sd':4, 'koth':5, 'dom':6, 'sab':7, 'dem':8},         # softcore
                             1: {'tdm':9, 'dm':10, 'ctf':11, 'sd':12, 'koth':13, 'dom':14, 'sab':15, 'dem':16},  # hardcore
@@ -167,7 +170,8 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         self.verbose('Loading config')
         self._switchcount1 = self.config.getint('settings', 'switchcount1')
         self._switchcount2 = self.config.getint('settings', 'switchcount2')
-        self._hysteresis = self.config.getint('settings', 'hysteresis')
+        self._hysteresis1 = self.config.getint('settings', 'hysteresis1')
+        self._hysteresis2 = self.config.getint('settings', 'hysteresis2')
         self._immediate = self.config.getboolean('settings', 'immediate')
         self._mapDelay = self.config.getint('settings', 'mapdelay')
         self._version = self.config.getint('settings', 'version')
@@ -233,12 +237,12 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         """
         if event.type == b3.events.EVT_CLIENT_CONNECT:
             self._playercount += 1
-            self.debug('PlayerCount: %s' % self._playercount)
+            self.debug('PlayerCount +1: %s' % self._playercount)
             # we're going up, pass a positive 1 to the adjustmentfunction
             self.adjustrotation(+1)
         elif event.type == b3.events.EVT_CLIENT_DISCONNECT:
             self._playercount -= 1
-            self.debug('PlayerCount: %s' % self._playercount)        
+            self.debug('PlayerCount -1: %s' % self._playercount)        
             # we're going down, pass a negative 1 to the adjustmentfunction
             self.adjustrotation(-1)
         elif event.type == b3.events.EVT_GAME_EXIT:
@@ -270,17 +274,17 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
         new_rotation = 0 # size: from 1 (small) to 3 (large)
 
         if delta == +1:
-            if self._playercount > (self._switchcount2 + self._hysteresis):
+            if self._rotation_size == 3 or self._playercount > (self._switchcount2 + self._hysteresis2):
                 new_rotation = 3
-            elif self._playercount > (self._switchcount1 + self._hysteresis):
+            elif self._rotation_size == 2 or self._playercount > (self._switchcount1 + self._hysteresis1):
                 new_rotation = 2
             else:
                 new_rotation = 1
 
         elif delta == -1:
-            if self._playercount < (self._switchcount1 - self._hysteresis):
+            if self._rotation_size == 1 or self._playercount < (self._switchcount1 - self._hysteresis1):
                 new_rotation = 1
-            elif self._playercount < (self._switchcount2 - self._hysteresis):
+            elif self._rotation_size == 2 or self._playercount < (self._switchcount2 - self._hysteresis2):
                 new_rotation = 2
             else:
                 new_rotation = 3
@@ -500,7 +504,7 @@ class RotationmanagerPlugin(b3.plugin.Plugin):
 
         self._playercount = len (self.console.clients.getList())
 
-        self.debug('PlayerCount: %s' % self._playercount)
+        self.debug('PlayerCount recount players: %s' % self._playercount)
 
         if self._oldplayercount == -1:
             self.adjustrotation(0)
