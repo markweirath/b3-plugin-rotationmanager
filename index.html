@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="B3-plugin-rotationmanager : Adjust the maprotation based on playercount">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>B3-plugin-rotationmanager</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/markweirath/b3-plugin-rotationmanager">View on GitHub</a>
+
+          <h1 id="project_title">B3-plugin-rotationmanager</h1>
+          <h2 id="project_tagline">Adjust the maprotation based on playercount</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/markweirath/b3-plugin-rotationmanager/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/markweirath/b3-plugin-rotationmanager/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>This plugin adjusts your maprotation based on the current playercount.
+The configuration holds 2 switchpoints and 3 rotations. It keeps track of your
+playercount and sets a small, medium or large maprotation. The plugin will
+automatically create a proper random maprotation to work with.</p>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements:</h2>
+
+<ul>
+<li>Call of Duty server</li>
+<li>B3 version 1.1.0 or higher</li>
+</ul>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation:</h2>
+
+<ol>
+<li><p>Unzip the contents of this package into your B3 folder. It will place the .py file in b3/extplugins and the config file xml in your b3/extplugins/conf folder.</p></li>
+<li><p>Open the .xml file with your favorit editor and modify the levels if you want them different. Do not edit the settingnames for they will not function under a different name.</p></li>
+<li><p>Open your B3.xml file (in b3/conf) and add the next line in the  section of the file:</p></li>
+</ol>
+
+<p><code>&lt;plugin name="rotationmanager" config="@b3/extplugins/conf/rotationmanager.xml"/&gt;</code></p>
+
+<ol>
+<li>Restart the bot</li>
+</ol>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">B3-plugin-rotationmanager maintained by <a href="https://github.com/markweirath">markweirath</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
